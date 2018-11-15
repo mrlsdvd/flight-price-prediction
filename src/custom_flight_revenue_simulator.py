@@ -1,4 +1,3 @@
-from IPython.display import display, Javascript
 import json
 from numpy.random import uniform, seed
 from numpy import floor
@@ -7,19 +6,33 @@ from collections import namedtuple
 def _tickets_sold(p, demand_level, max_qty):
         quantity_demanded = floor(max(0, p - demand_level))
         return min(quantity_demanded, max_qty)
-    
-def simulate_one_day_revenue(days_left, tickets_left, pricing_function, demand_level, verbose=False):
-    if (days_left == 0) or (tickets_left == 0):
+
+def simulate_single_action(days_left, demand_level, tickets_to_sell, price, verbose=False):
+    """
+    Simulates the action of setting the flight price to p for the current
+    state of days left, tickets left, and demand level.
+
+    Arguments:
+        days_left (int): Number of days left before flight (in range [0, 100])
+        demand_level (int): Arbitrary level of flight demand (in range [100, 200])
+        tickets_to_sell (int): Tickets left to sell
+        price (int): Price set based on state (action)
+        verbose (bool): Whether to print simulation output or not
+
+    Returns:
+        revenue (int): Revenue made based on state and action (reward)
+        tickets_left (int): Number of tickets left to sell after action (new state)
+    """
+    if (days_left == 0) or (tickets_to_sell == 0):
         if verbose:
             if (days_left == 0):
                 print("The flight took off today. ")
-            if (tickets_left == 0):
+            if (tickets_to_sell == 0):
                 print("This flight is booked full.")
             print("Total Revenue: ${:.0f}".format(rev_to_date))
         return 0
     else:
-        p = pricing_function(days_left, tickets_left, demand_level)
-        q = _tickets_sold(demand_level, p, tickets_left)
+        tickets_sold = _tickets_sold(demand_level, price, tickets_to_sell)
         if verbose:
             print("{:.0f} days before flight: "
                   "Started with {:.0f} seats. "
@@ -27,37 +40,11 @@ def simulate_one_day_revenue(days_left, tickets_left, pricing_function, demand_l
                   "Price set to ${:.0f}. "
                   "Sold {:.0f} tickets. "
                   "Daily revenue is {:.0f}. Total revenue-to-date is {:.0f}. "
-                  "{:.0f} seats remaining".format(days_left, tickets_left, demand_level, p, q, p*q, p*q+rev_to_date, tickets_left-q))
-        return q*p, tickets_left-q
+                  "{:.0f} seats remaining".format(days_left, tickets_to_sell, demand_level, p, tickets_sold, p*tickets_sold, p*tickets_sold+rev_to_date, tickets_to_sell-tickets_sold))
 
-def simulate_revenue(days_left, tickets_left, pricing_function, rev_to_date=0, demand_level_min=100, demand_level_max=200, verbose=False):
-    if (days_left == 0) or (tickets_left == 0):
-        if verbose:
-            if (days_left == 0):
-                print("The flight took off today. ")
-            if (tickets_left == 0):
-                print("This flight is booked full.")
-            print("Total Revenue: ${:.0f}".format(rev_to_date))
-        return rev_to_date
-    else:
-        demand_level = uniform(demand_level_min, demand_level_max)
-        p = pricing_function(days_left, tickets_left, demand_level)
-        q = _tickets_sold(demand_level, p, tickets_left)
-        if verbose:
-            print("{:.0f} days before flight: "
-                  "Started with {:.0f} seats. "
-                  "Demand level: {:.0f}. "
-                  "Price set to ${:.0f}. "
-                  "Sold {:.0f} tickets. "
-                  "Daily revenue is {:.0f}. Total revenue-to-date is {:.0f}. "
-                  "{:.0f} seats remaining".format(days_left, tickets_left, demand_level, p, q, p*q, p*q+rev_to_date, tickets_left-q))
-        return simulate_revenue(days_left = days_left-1,
-                              tickets_left = tickets_left-q,
-                              pricing_function=pricing_function,
-                              rev_to_date=rev_to_date + p * q,
-                              demand_level_min=demand_level_min,
-                              demand_level_max=demand_level_max,
-                              verbose=verbose)
+        revenue = tickets_sold * price
+        tickets_left = tickets_to_sell - tickets_sold
+        return (revenue, tickets_left)
 
 def _save_score(score):
     message = {
