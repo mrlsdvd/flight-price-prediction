@@ -33,6 +33,7 @@ def q_learning(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
     demand_level = int(math.floor(np.random.uniform(0, 100)))  # Demand level is uniformly random
 
     for i in range(num_iter):
+        print("At iteration: {}".format(i))
         #  If end of round reached, reset days_left and tickets_to_sell
         if days_left == 0 or tickets_to_sell == 0:
             days_left = 100
@@ -68,7 +69,7 @@ def q_learning(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
 def train(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
           epsilon_threshold=0.1, num_iter=1000, Q=None, save_q=True,
           q_outfile_name="Q-1.pickle"):
-    Q = q_learning(num_iter=10)
+    Q = q_learning(num_iter=10000)
     if save_q:
         with open(q_outfile_name, 'wb') as q_f:
             pickle.dump(Q, q_f)
