@@ -5,7 +5,8 @@ from custom_flight_revenue_simulator import simulate_single_action as take_actio
 from make_state_features import create_state
 
 def q_learning(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
-               epsilon_threshold=0.1, num_iter=1000, Q=None):
+               epsilon_threshold=0.1, num_iter=1000, Q=None, default_val=0,
+               print_every=100000):
     """
     Performs Q-learning
 
@@ -20,20 +21,24 @@ def q_learning(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
         num_iter (int): Number of iterations to run Q-learning for
         Q (np.array): Optional 2D array of shape (|S|, |A|) where Q[s, a] is
             the value of being at a state s and taking action a
+        default_val (float): Optional fill value for Q
+        print_every (int): Parameter detailing what iteration to report at
 
     Returns:
         Q_new (np.array): Updated Q
     """
     if Q is None:
-        Q = np.zeros((num_states, num_actions))
-    epsilon_threshold = 0.1
+        Q = np.empty((num_states, num_actions))
+        Q.fill(default_val)
+    epsilon_threshold = 0.3
 
     days_left = 100  # Begin max days_left at 100
     tickets_to_sell = 100  # Begin max tickets_to_sell at 100
-    demand_level = int(math.floor(np.random.uniform(0, 100)))  # Demand level is uniformly random
+    demand_level = int(math.floor(np.random.uniform(100, 200)))  # Demand level is uniformly random
 
     for i in range(num_iter):
-        print("At iteration: {}".format(i))
+        if i % print_every == 0:
+            print("At iteration: {}".format(i))
         #  If end of round reached, reset days_left and tickets_to_sell
         if days_left == 0 or tickets_to_sell == 0:
             days_left = 100
@@ -52,7 +57,7 @@ def q_learning(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
         r, tickets_left = take_action(days_left, demand_level, tickets_to_sell, a)
 
         # Create next state
-        demand_level = int(math.floor(np.random.uniform(0, 100)))
+        demand_level = int(math.floor(np.random.uniform(100, 200)))
         days_left = days_left - 1
         tickets_to_sell = tickets_left
 
@@ -68,8 +73,8 @@ def q_learning(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
 
 def train(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
           epsilon_threshold=0.1, num_iter=1000, Q=None, save_q=True,
-          q_outfile_name="Q-1.pickle"):
-    Q = q_learning(num_iter=10000)
+          q_outfile_name="Q-3.pickle"):
+    Q = q_learning(num_iter=10000000)
     if save_q:
         with open(q_outfile_name, 'wb') as q_f:
             pickle.dump(Q, q_f)

@@ -5,9 +5,9 @@ def create_state(days_left, demand_level, tickets_to_sell):
     Creates an integer-value state from flight information
 
     Arguments:
-        days_left (int): Number of days left before flight (in range [0, 100])
-        demand_level (int): Arbitrary level of flight demand (in range [100, 200])
-        tickets_to_sell (int): Tickets left to sell
+        days_left (int): Number of days left before flight (in range [1, 100])
+        demand_level (int): Arbitrary level of flight demand (in range [100, 199])
+        tickets_to_sell (int): Tickets left to sell (in range [1,100])
 
     Returns:
         state (int): Integer representing the state (in range [0, 999999])

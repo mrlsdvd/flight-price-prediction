@@ -32,7 +32,7 @@ def simulate_single_action(days_left, demand_level, tickets_to_sell, price, verb
             print("Total Revenue: ${:.0f}".format(rev_to_date))
         return 0
     else:
-        tickets_sold = _tickets_sold(demand_level, price, tickets_to_sell)
+        tickets_sold = _tickets_sold(price, demand_level, tickets_to_sell)
         if verbose:
             print("{:.0f} days before flight: "
                   "Started with {:.0f} seats. "
