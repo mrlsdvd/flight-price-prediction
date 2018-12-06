@@ -50,8 +50,8 @@ def q_learning(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
         if epsilon > epsilon_threshold:
             a = np.argmax(Q[s])
         else:
-            # Randomly choose price action
-            a = int(math.floor(np.random.uniform(0, 201)))
+            # Randomly choose price action between 0 and demand level
+            a = int(math.floor(np.random.uniform(0, demand_level)))
 
         # Simlulate taking action with current state
         r, tickets_left = take_action(days_left, demand_level, tickets_to_sell, a)
@@ -61,7 +61,7 @@ def q_learning(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
         days_left = days_left - 1
         tickets_to_sell = tickets_left
 
-        if tickets_to_sell == 0 or days_left == 0:
+        if tickets_left == 0 or days_left == 1:
             # No more tickets or no more days in next state
             # Q[next_state, a] -> 0
             Q[s, a] = Q[s, a] + lr*(r - Q[s, a])
@@ -73,7 +73,7 @@ def q_learning(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
 
 def train(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
           epsilon_threshold=0.1, num_iter=1000, Q=None, save_q=True,
-          q_outfile_name="Q-3.pickle"):
+          q_outfile_name="Q-4.pickle"):
     Q = q_learning(num_iter=10000000)
     if save_q:
         with open(q_outfile_name, 'wb') as q_f:

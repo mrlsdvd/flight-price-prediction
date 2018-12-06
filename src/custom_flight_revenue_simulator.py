@@ -4,7 +4,7 @@ from numpy import floor
 from collections import namedtuple
 
 def _tickets_sold(p, demand_level, max_qty):
-        quantity_demanded = floor(max(0, p - demand_level))
+        quantity_demanded = floor(max(0, demand_level - p))
         return min(quantity_demanded, max_qty)
 
 def simulate_single_action(days_left, demand_level, tickets_to_sell, price, verbose=False):
@@ -40,7 +40,7 @@ def simulate_single_action(days_left, demand_level, tickets_to_sell, price, verb
                   "Price set to ${:.0f}. "
                   "Sold {:.0f} tickets. "
                   "Daily revenue is {:.0f}. Total revenue-to-date is {:.0f}. "
-                  "{:.0f} seats remaining".format(days_left, tickets_to_sell, demand_level, p, tickets_sold, p*tickets_sold, p*tickets_sold+rev_to_date, tickets_to_sell-tickets_sold))
+                  "{:.0f} seats remaining".format(days_left, tickets_to_sell, demand_level, price, tickets_sold, price*tickets_sold, price*tickets_sold+rev_to_date, tickets_to_sell-tickets_sold))
 
         revenue = tickets_sold * price
         tickets_left = tickets_to_sell - tickets_sold
