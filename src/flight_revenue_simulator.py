@@ -2,10 +2,10 @@ from IPython.display import display, Javascript
 import json
 from numpy.random import uniform, seed
 from numpy import floor
-from collections import namedtuple
+from collections import named tuple
 
 def _tickets_sold(p, demand_level, max_qty):
-        quantity_demanded = floor(max(0, p - demand_level))
+        quantity_demanded = floor(max(0, demand_level - p))
         return min(quantity_demanded, max_qty)
 
 def simulate_revenue(days_left, tickets_left, pricing_function, rev_to_date=0, demand_level_min=100, demand_level_max=200, verbose=False):
@@ -20,7 +20,7 @@ def simulate_revenue(days_left, tickets_left, pricing_function, rev_to_date=0, d
     else:
         demand_level = uniform(demand_level_min, demand_level_max)
         p = pricing_function(days_left, tickets_left, demand_level)
-        q = _tickets_sold(demand_level, p, tickets_left)
+        q = _tickets_sold(p, demand_level, tickets_left)
         if verbose:
             print("{:.0f} days before flight: "
                   "Started with {:.0f} seats. "
@@ -64,14 +64,14 @@ def score_me(pricing_function, sims_per_scenario=200):
     scenario_scores = []
     for s in scenarios:
         scenario_score = sum(simulate_revenue(s.n_days, s.n_tickets, pricing_function)
-                                     for _ in range(sims_per_scenario)) / sims_per_scenario
+                                     for _ in range(sims_per_scenario)) / float(sims_per_scenario)
         print("Ran {:.0f} flights starting {:.0f} days before flight with {:.0f} tickets. "
               "Average revenue: ${:.0f}".format(sims_per_scenario,
                                                 s.n_days,
                                                 s.n_tickets,
                                                 scenario_score))
         scenario_scores.append(scenario_score)
-    score = sum(scenario_scores) / len(scenario_scores)
+    score = float(sum(scenario_scores)) / float(len(scenario_scores))
     try:
         _save_score(score)
     except:
