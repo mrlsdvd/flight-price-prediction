@@ -158,7 +158,17 @@ def dynamic_programming(Q=None, discount=0.95, lr=0.1, epsilon_threshold=0.1,
                         Q[days_left-1, demand_level-100, tickets_left-1, action] = r
 
                     else:
+<<<<<<< HEAD
                         prev_state_avg = np.amax(Q[days_left-1, : , tickets_left-1, :], axis=1).mean()
+=======
+                        prev_state_avg = 0
+                        for i in range(100, 200):
+                            next_state = create_state(days_left-1, i, tickets_left)
+#                             print(Q[next_state])
+#                             print(np.max(Q[next_state]))
+                            next_Q = np.max(Q[next_state])
+                            prev_state_avg += next_Q
+>>>>>>> ed569b9595131ad309346f15b53c14edf1412b57
                         prev_state_avg = float(prev_state_avg) / 100.0
                         Q[days_left-1, demand_level-100, tickets_left-1, action] = r + prev_state_avg
 
