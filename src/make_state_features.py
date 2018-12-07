@@ -1,4 +1,4 @@
-
+import numpy as np
 
 def create_state(days_left, demand_level, tickets_to_sell):
     """
@@ -18,3 +18,37 @@ def create_state(days_left, demand_level, tickets_to_sell):
     state = int(days_left + demand_level + tickets_to_sell)
 
     return state
+
+
+def zero_Q(shape):
+    """
+    Initializes a Q of passed in shape of all zeros.
+
+    Arguments:
+        shape (tuple): Tuple of (days, demand_level, tickets_to_sell, action)
+            sizes
+
+    Returns:
+        Q (np.array): The initialized Q
+    """
+    Q = np.zeros(shape)
+    return Q
+
+
+def demand_level_Q(shape):
+    """
+    Initializes Q such that the action index corresponding to demand level - 1
+    has the greatest value.
+
+    Arguments:
+        shape (tuple): Tuple of (days, demand_level, tickets_to_sell, action)
+            sizes
+
+    Returns:
+        Q (np.array): The initialized Q
+    """
+    Q = np.zeros(shape)
+    for demand_level in range(100, 200):
+        for action in range(201):
+            a_idx = max(demand_level-100 - 1, 0)
+            Q[:, demand_level-100, :, a_idx] = 1
