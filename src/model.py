@@ -3,6 +3,7 @@ import numpy as np
 import pickle
 from custom_flight_revenue_simulator import simulate_single_action as take_action
 from make_state_features import create_state
+from make_state_features import zero_Q, demand_level_Q
 
 def q_learning(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
                epsilon_threshold=0.1, num_iter=1000, Q=None, default_val=0,
@@ -98,9 +99,9 @@ def q_learning_all_demand_levels(num_states=1000000, num_actions=201, discount=0
     if Q is None:
         Q = np.empty((num_states, num_actions))
         Q.fill(default_val)
-     
-        
-        
+
+
+
     epsilon_threshold = 0.3
 
     days_left = 100  # Begin max days_left at 100
@@ -125,7 +126,7 @@ def q_learning_all_demand_levels(num_states=1000000, num_actions=201, discount=0
             else:
                 # Randomly choose price action
                 a = int(math.floor(np.random.uniform(0, demand_level)))
-                
+
             r, tickets_left = take_action(days_left, demand_level, tickets_to_sell, a)
 
             if tickets_left == 0 or days_left == 1:
@@ -135,7 +136,7 @@ def q_learning_all_demand_levels(num_states=1000000, num_actions=201, discount=0
             else:
                 sp = create_state(days_left, demand_level, tickets_to_sell)
                 Q[s, a] = Q[s, a] + lr*(r + discount*np.max(Q[sp]) - Q[s, a])
-        
+
         # Create next state
         days_left = days_left - 1
         tickets_to_sell = tickets_left
@@ -143,34 +144,23 @@ def q_learning_all_demand_levels(num_states=1000000, num_actions=201, discount=0
     return Q
 
 
-def dynamic_programming(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
-               epsilon_threshold=0.1, num_iter=1000, Q=None, default_val=0,
-               print_every=100000):
-    if Q is None:
-        Q = np.zeros((num_states, num_actions))
-#         Q.fill(default_val)
+def dynamic_programming(Q=None, discount=0.95, lr=0.1, epsilon_threshold=0.1,
+                        num_iter=1000, default_val=0, print_every=100000):
     for days_left in range(1, 101):
         print("days_left: {}".format(days_left))
         for demand_level in range(100, 200):
             for tickets_to_sell in range(1, 101):
-                for action in range(num_actions):
-                    
-                    state = create_state(days_left, demand_level, tickets_to_sell)
+                for action in range(201):
+
                     r, tickets_left = take_action(days_left, demand_level, tickets_to_sell, action)
-                    
+
                     if days_left == 1 or tickets_left == 0:
-                        Q[state, action] = r
-                    
+                        Q[days_left-1, demand_level-100, tickets_left-1, action] = r
+
                     else:
-                        prev_state_avg = 0
-                        for i in range(100, 200):
-                            next_state = create_state(days_left-1, i, tickets_left)
-                            next_Q = np.max(Q[next_state])
-                            prev_state_avg += next_Q
+                        prev_state_avg = np.amax(Q[days_left-1, : , tickets_left-1, :], axis=1).mean()
                         prev_state_avg = float(prev_state_avg) / 100.0
-                        Q[state, action] = r + prev_state_avg
-                        
-    
+                        Q[days_left-1, demand_level-100, tickets_left-1, action] = r + prev_state_avg
 
 
 def train(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
@@ -178,7 +168,9 @@ def train(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
     q_outfile_name="Q-dp.pickle"):
 #     Q = q_learning_all_demand_levels(num_iter=10000000)
 #     Q = q_learning(num_iter=10000000)
-    Q = dynamic_programming()
+    # Initialize Q
+    Q = zero_Q((100, 100, 100, 201))
+    Q = dynamic_programming(Q)
     if save_q:
         with open(q_outfile_name, 'wb') as q_f:
             pickle.dump(Q, q_f)
