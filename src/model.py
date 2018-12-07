@@ -160,6 +160,8 @@ def dynamic_programming(Q=None, discount=0.95, lr=0.1, epsilon_threshold=0.1,
                     else:
                         prev_state_avg = np.amax(Q[days_left-1, : , tickets_left-1, :], axis=1).mean()
                         Q[days_left-1, demand_level-100, tickets_left-1, action] = r + prev_state_avg
+    return Q
+                        
 
 
 def train(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
