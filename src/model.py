@@ -166,12 +166,13 @@ def dynamic_programming(Q=None, discount=0.95, lr=0.1, epsilon_threshold=0.1,
 
 def train(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
           epsilon_threshold=0.1, num_iter=1000, Q=None, save_q=True,
-    q_outfile_name="Q-dp.pickle"):
+    q_outfile_name="Q-5.pickle"):
 #     Q = q_learning_all_demand_levels(num_iter=10000000)
-#     Q = q_learning(num_iter=10000000)
+    Q = q_learning(num_iter=10000000)
     # Initialize Q
-    Q = zero_Q((100, 100, 100, 201))
-    Q = dynamic_programming(Q)
+    # Q = zero_Q((100, 100, 100, 201))
+    # Q = demand_level_Q((100, 100, 100, 201))
+    # Q = dynamic_programming(Q)
     if save_q:
         with open(q_outfile_name, 'wb') as q_f:
             pickle.dump(Q, q_f)

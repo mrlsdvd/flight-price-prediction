@@ -52,3 +52,27 @@ def demand_level_Q(shape):
         for action in range(201):
             a_idx = max(demand_level-100 - 1, 0)
             Q[:, demand_level-100, :, a_idx] = 1
+    return Q
+
+
+def demand_level_Q_2D(shape):
+    """
+    Initializes Q such that the action index corresponding to demand level - 1
+    has the greatest value.
+
+    Arguments:
+        shape (tuple): Tuple of (state, action)
+            sizes
+
+    Returns:
+        Q (np.array): The initialized Q
+    """
+    Q = np.zeros(shape)
+    for days_left in range(1, 101):
+        for demand_level in range(100, 200):
+            for tickets_to_sell in range(1, 101):
+                s = create_state(days_left, demand_level, tickets_to_sell)
+                a = max(0, demand_level-1)
+                Q[s, a] = 1
+
+    return Q
