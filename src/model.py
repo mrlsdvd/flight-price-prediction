@@ -98,6 +98,9 @@ def q_learning_all_demand_levels(num_states=1000000, num_actions=201, discount=0
     if Q is None:
         Q = np.empty((num_states, num_actions))
         Q.fill(default_val)
+     
+        
+        
     epsilon_threshold = 0.3
 
     days_left = 100  # Begin max days_left at 100
@@ -144,9 +147,8 @@ def dynamic_programming(num_states=1000000, num_actions=201, discount=0.95, lr=0
                epsilon_threshold=0.1, num_iter=1000, Q=None, default_val=0,
                print_every=100000):
     if Q is None:
-        Q = np.empty((num_states, num_actions))
-        Q.fill(default_val)
-    
+        Q = np.zeros((num_states, num_actions))
+#         Q.fill(default_val)
     for days_left in range(1, 101):
         print("days_left: {}".format(days_left))
         for demand_level in range(100, 200):
@@ -162,9 +164,7 @@ def dynamic_programming(num_states=1000000, num_actions=201, discount=0.95, lr=0
                     else:
                         prev_state_avg = 0
                         for i in range(100, 200):
-                            next_state = create_state(days_left-1, demand_level, tickets_left)
-#                             print(Q[next_state])
-#                             print(np.max(Q[next_state]))
+                            next_state = create_state(days_left-1, i, tickets_left)
                             next_Q = np.max(Q[next_state])
                             prev_state_avg += next_Q
                         prev_state_avg = float(prev_state_avg) / 100.0
