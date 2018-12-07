@@ -158,29 +158,19 @@ def dynamic_programming(Q=None, discount=0.95, lr=0.1, epsilon_threshold=0.1,
                         Q[days_left-1, demand_level-100, tickets_left-1, action] = r
 
                     else:
-<<<<<<< HEAD
                         prev_state_avg = np.amax(Q[days_left-1, : , tickets_left-1, :], axis=1).mean()
-=======
-                        prev_state_avg = 0
-                        for i in range(100, 200):
-                            next_state = create_state(days_left-1, i, tickets_left)
-#                             print(Q[next_state])
-#                             print(np.max(Q[next_state]))
-                            next_Q = np.max(Q[next_state])
-                            prev_state_avg += next_Q
->>>>>>> ed569b9595131ad309346f15b53c14edf1412b57
-                        prev_state_avg = float(prev_state_avg) / 100.0
                         Q[days_left-1, demand_level-100, tickets_left-1, action] = r + prev_state_avg
 
 
 def train(num_states=1000000, num_actions=201, discount=0.95, lr=0.1,
           epsilon_threshold=0.1, num_iter=1000, Q=None, save_q=True,
-    q_outfile_name="Q-dp.pickle"):
+    q_outfile_name="Q-5.pickle"):
 #     Q = q_learning_all_demand_levels(num_iter=10000000)
-#     Q = q_learning(num_iter=10000000)
+    Q = q_learning(num_iter=10000000)
     # Initialize Q
-    Q = zero_Q((100, 100, 100, 201))
-    Q = dynamic_programming(Q)
+    # Q = zero_Q((100, 100, 100, 201))
+    # Q = demand_level_Q((100, 100, 100, 201))
+    # Q = dynamic_programming(Q)
     if save_q:
         with open(q_outfile_name, 'wb') as q_f:
             pickle.dump(Q, q_f)

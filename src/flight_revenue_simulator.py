@@ -2,7 +2,7 @@ from IPython.display import display, Javascript
 import json
 from numpy.random import uniform, seed
 from numpy import floor
-from collections import named tuple
+from collections import namedtuple
 
 def _tickets_sold(p, demand_level, max_qty):
         quantity_demanded = floor(max(0, demand_level - p))

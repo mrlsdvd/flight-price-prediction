@@ -52,3 +52,4 @@ def demand_level_Q(shape):
         for action in range(201):
             a_idx = max(demand_level-100 - 1, 0)
             Q[:, demand_level-100, :, a_idx] = 1
+    return Q
